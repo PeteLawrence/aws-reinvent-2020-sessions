@@ -20,9 +20,9 @@ class SessionsPage extends React.Component {
 
     this.state = {
       language: 'english',
-      startTime: '9:00',
+      startTime: '09:00',
       endTime: '17:00',
-      date: '2020-12-02',
+      date: '2020-12-01',
       tags: this.getTags(),
       keyword: ''
     };
