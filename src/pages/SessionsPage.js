@@ -235,12 +235,12 @@ class SessionsPage extends React.Component {
 
           <Form.Group>
             <Form.Label>Date</Form.Label>
-            <Form.Control type="date" defaultValue="2020-12-02" onChange={ this.handleDateChange.bind(this)} />
+            <Form.Control type="date" defaultValue="2020-12-01" onChange={ this.handleDateChange.bind(this)} />
           </Form.Group>
           
           <Form.Group>
             <Form.Label>Time</Form.Label>
-            <Form.Control type="time" defaultValue="9:00" onChange={ this.handleStartTimeChange.bind(this)} />
+            <Form.Control type="time" defaultValue="09:00" onChange={ this.handleStartTimeChange.bind(this)} />
             <Form.Control type="time" defaultValue="17:00" onChange={ this.handleEndTimeChange.bind(this)}/>
           </Form.Group>
 
