@@ -32,10 +32,17 @@ class SessionsPage extends React.Component {
     let allTags = [];
     for (let session of data.sessions) {
       let tags = session.tags.split(',');
+      let hiddenTags = session.hiddenTags.split(',');
 
       for (let tag of tags) {
         if (!allTags.includes(tag)) {
           allTags.push(tag);
+        }
+      }
+
+      for (let hiddenTag of hiddenTags) {
+        if (!allTags.includes(hiddenTag)) {
+          allTags.push(hiddenTag);
         }
       }
     }
@@ -80,7 +87,7 @@ class SessionsPage extends React.Component {
       let match = false;
 
       for (let selectedTag of this.state.tags) {
-        if (tags.includes(selectedTag)) {
+        if (tags.includes(selectedTag) || hiddenTags.includes(selectedTag)) {
           match = true;
         }
       }
