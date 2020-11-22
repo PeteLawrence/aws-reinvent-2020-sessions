@@ -1,6 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import { Badge, Card, Form } from 'react-bootstrap';
+import { Badge, Card, Col, Form } from 'react-bootstrap';
 
 const data = require('../data/schedule.json');
 
@@ -226,35 +226,45 @@ class SessionsPage extends React.Component {
         <h1>Sessions</h1>
 
         <Form>
-          <Form.Group>
-            <Form.Label>Language</Form.Label>
-            <Form.Control as="select" ref="language" onChange={this.handleLanguageChange.bind(this)} >
-              { this.getLanguages().map(lang => ( <option>{ lang }</option> ) ) }
-            </Form.Control>
-          </Form.Group>
+          <Form.Row>
+            <Form.Group as={Col} md={8}>
+              <Form.Label>Keyword</Form.Label>
+              <Form.Control type="search" onChange={this.handleKeywordChange.bind(this)} multiple ></Form.Control>
+            </Form.Group>
 
-          <Form.Group>
-            <Form.Label>Date</Form.Label>
-            <Form.Control type="date" defaultValue="2020-12-01" onChange={ this.handleDateChange.bind(this)} />
-          </Form.Group>
+            <Form.Group as={Col} md={4}>
+              <Form.Label>Tags</Form.Label>
+              <Form.Control as="select" ref="tags" onChange={this.handleTagChange.bind(this)} multiple >
+                { this.getTags().map(tag => ( <option>{ tag }</option> ) ) }
+              </Form.Control>
+            </Form.Group>
+          </Form.Row>
           
-          <Form.Group>
-            <Form.Label>Time</Form.Label>
-            <Form.Control type="time" defaultValue="09:00" onChange={ this.handleStartTimeChange.bind(this)} />
-            <Form.Control type="time" defaultValue="17:00" onChange={ this.handleEndTimeChange.bind(this)}/>
-          </Form.Group>
+          <Form.Row>
+            <Form.Group as={Col} md={3}>
+              <Form.Label>Date</Form.Label>
+              <Form.Control type="date" defaultValue="2020-12-01" onChange={ this.handleDateChange.bind(this)} />
+            </Form.Group>
+            
+            <Form.Group as={Col} md={3}>
+              <Form.Label>Start Time</Form.Label>
+              <Form.Control type="time" defaultValue="09:00" onChange={ this.handleStartTimeChange.bind(this)} />
+            </Form.Group>
 
-          <Form.Group>
-            <Form.Label>Tags</Form.Label>
-            <Form.Control as="select" ref="tags" onChange={this.handleTagChange.bind(this)} multiple >
-              { this.getTags().map(tag => ( <option>{ tag }</option> ) ) }
-            </Form.Control>
-          </Form.Group>
+            <Form.Group as={Col} md={3}>
+              <Form.Label>End Time</Form.Label>
+              <Form.Control type="time" defaultValue="17:00" onChange={ this.handleEndTimeChange.bind(this)}/>
+            </Form.Group>
 
-          <Form.Group>
-            <Form.Label>Keyword</Form.Label>
-            <Form.Control type="search" onChange={this.handleKeywordChange.bind(this)} multiple ></Form.Control>
-          </Form.Group>
+            <Form.Group as={Col} md={3}>
+              <Form.Label>Language</Form.Label>
+              <Form.Control as="select" ref="language" onChange={this.handleLanguageChange.bind(this)} >
+                { this.getLanguages().map(lang => ( <option value={ lang }>{ lang.charAt(0).toUpperCase() + lang.slice(1) }</option> ) ) }
+              </Form.Control>
+            </Form.Group>
+            
+          </Form.Row>
+
         </Form>
 
           { this.listSessions(this.state.language) }
