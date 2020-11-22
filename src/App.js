@@ -3,7 +3,6 @@ import './App.css';
 
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
 
 import SessionsPage from './pages/SessionsPage';
 
