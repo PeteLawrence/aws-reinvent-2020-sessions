@@ -1,13 +1,17 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import Card from 'react-bootstrap/Card';
-import Badge from 'react-bootstrap/Badge';
-import { Form } from 'react-bootstrap';
+import { Badge, Card, Form } from 'react-bootstrap';
 
 const data = require('../data/schedule.json');
 
 var advancedFormat = require('dayjs/plugin/advancedFormat');
-dayjs.extend(advancedFormat)
+var objectSupport = require('dayjs/plugin/objectSupport');
+var utc = require('dayjs/plugin/utc');
+var timezone = require('dayjs/plugin/timezone')
+dayjs.extend(advancedFormat);
+dayjs.extend(objectSupport);
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 class SessionsPage extends React.Component {
 
@@ -16,10 +20,11 @@ class SessionsPage extends React.Component {
 
     this.state = {
       language: 'english',
-      startTime: 9,
-      endTime: 17,
+      startTime: '9:00',
+      endTime: '17:00',
       date: '2020-12-02',
-      tags: this.getTags()
+      tags: this.getTags(),
+      keyword: ''
     };
   }
 
@@ -78,7 +83,14 @@ class SessionsPage extends React.Component {
       // Time filter
       if (this.state.startTime && this.state.endTime) {
         let sessionStart = dayjs.unix(session.schedulingData.start.timestamp);
-        if (sessionStart.format('H') < parseInt(this.state.startTime) || sessionStart.format('H') > parseInt(this.state.endTime)) {
+
+        let startTimeParts = this.state.startTime.split(':');
+        let filterStart = dayjs({ year: sessionStart.year(), month: sessionStart.month(), day: sessionStart.date(), hour: startTimeParts[0], minute: startTimeParts[1] });
+
+        let endTimeParts = this.state.endTime.split(':');
+        let filterEnd = dayjs({ year: sessionStart.year(), month: sessionStart.month(), day: sessionStart.date(), hour: endTimeParts[0], minute: endTimeParts[1] });
+
+        if (sessionStart.isBefore(filterStart) || sessionStart.isAfter(filterEnd)) {
           continue;
         }
       }
@@ -92,6 +104,14 @@ class SessionsPage extends React.Component {
         }
       }
       if (!match) continue;
+
+      // Keyword filter
+      if (this.state.keyword) {
+        let re = new RegExp(this.state.keyword,"i");
+        if (!session.name.match(re)) {
+          continue;
+        }
+      }
 
       sessions.push(session);
     }
@@ -110,7 +130,7 @@ class SessionsPage extends React.Component {
         <Card className="mb-3">
           <Card.Header>
             <Card.Title>{ session.name }</Card.Title>
-            <Card.Subtitle>{ sessionStart.format('Do MMM HH:mm') } - { sessionEnd.format('HH:mm') }</Card.Subtitle>
+            <Card.Subtitle>{ sessionStart.format('Do MMM HH:mm') } - { sessionEnd.format('HH:mm z') }</Card.Subtitle>
           </Card.Header>
           <Card.Body>
             <div dangerouslySetInnerHTML={{ __html: session.description }} />
@@ -166,6 +186,12 @@ class SessionsPage extends React.Component {
     });
   }
 
+  handleKeywordChange(event) {
+    this.setState({
+      keyword: event.target.value
+    });
+  }
+
 
   /**
    * Renders the Marker component
@@ -191,8 +217,8 @@ class SessionsPage extends React.Component {
           
           <Form.Group>
             <Form.Label>Time</Form.Label>
-            <Form.Control type="time" defaultValue="9" onChange={ this.handleStartTimeChange.bind(this)} />
-            <Form.Control type="time" defaultValue="17" onChange={ this.handleEndTimeChange.bind(this)}/>
+            <Form.Control type="time" defaultValue="9:00" onChange={ this.handleStartTimeChange.bind(this)} />
+            <Form.Control type="time" defaultValue="17:00" onChange={ this.handleEndTimeChange.bind(this)}/>
           </Form.Group>
 
           <Form.Group>
@@ -200,6 +226,11 @@ class SessionsPage extends React.Component {
             <Form.Control as="select" ref="tags" onChange={this.handleTagChange.bind(this)} multiple >
               { this.getTags().map(tag => ( <option>{ tag }</option> ) ) }
             </Form.Control>
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label>Keyword</Form.Label>
+            <Form.Control type="search" onChange={this.handleKeywordChange.bind(this)} multiple ></Form.Control>
           </Form.Group>
         </Form>
 
