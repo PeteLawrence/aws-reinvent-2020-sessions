@@ -1,6 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import Card from 'react-bootstrap/Card';
+import Badge from 'react-bootstrap/Badge';
 import { Form } from 'react-bootstrap';
 
 const data = require('../data/schedule.json');
@@ -50,7 +51,6 @@ class SessionsPage extends React.Component {
       // Time filter
       if (this.state.startTime && this.state.endTime) {
         let sessionStart = dayjs.unix(session.schedulingData.start.timestamp);
-        console.log(sessionStart.format('H'), this.state.startTime, this.state.endTime);
         if (sessionStart.format('H') < parseInt(this.state.startTime) || sessionStart.format('H') > parseInt(this.state.endTime)) {
           continue;
         }
@@ -64,22 +64,36 @@ class SessionsPage extends React.Component {
 
   listSessions() {
     let sessions = this.filterSessions();
+    console.log(sessions[0]);
 
     return sessions.map(session => {
       let sessionStart = dayjs.unix(session.schedulingData.start.timestamp);
       let sessionEnd = dayjs.unix(session.schedulingData.end.timestamp);
 
       return(
-        <Card className="mb-2">
-          <Card.Body>
+        <Card className="mb-3">
+          <Card.Header>
             <Card.Title>{ session.name }</Card.Title>
             <Card.Subtitle>{ sessionStart.format('Do MMM HH:mm') } - { sessionEnd.format('HH:mm') }</Card.Subtitle>
+          </Card.Header>
+          <Card.Body>
             <div dangerouslySetInnerHTML={{ __html: session.description }} />
           </Card.Body>
+          <Card.Footer>
+              { session.tags.split(',').map(tag => {
+                  return (<Badge variant="primary" className="mr-1">{ tag }</Badge>);
+                })
+              }
+              { session.hiddenTags.split(',').map(tag => {
+                  return (<Badge variant="secondary" className="mr-1">{ tag }</Badge>);
+                })
+              }
+            </Card.Footer>
         </Card>
       )
     });
   }
+
 
   handleLanguageChange(event) {
     this.setState({
