@@ -30,7 +30,7 @@ class SessionsPage extends React.Component {
 
 
   getLanguages() {
-    return [ 'english', 'Spanish' ];
+    return [ 'english', 'Chinese', 'French', 'Italian', 'Japanese', 'Korean', 'Portugese', 'Spanish' ];
   }
 
   getTags() {
@@ -40,13 +40,13 @@ class SessionsPage extends React.Component {
       let hiddenTags = session.hiddenTags.split(',');
 
       for (let tag of tags) {
-        if (!allTags.includes(tag)) {
+        if (this.isValidTag(tag) && !allTags.includes(tag)) {
           allTags.push(tag);
         }
       }
 
       for (let hiddenTag of hiddenTags) {
-        if (!allTags.includes(hiddenTag)) {
+        if (this.isValidTag(hiddenTag) && !allTags.includes(hiddenTag)) {
           allTags.push(hiddenTag);
         }
       }
@@ -56,7 +56,26 @@ class SessionsPage extends React.Component {
 
     return allTags;
   }
+
+  isLanguage(language) {
+    return this.getLanguages().includes(language);
+  }
+
+  isValidTag(tag) {
+    // Ignore tags starting with __
+    if (tag.startsWith('__')) {
+      return false;
+    }
+
+    // Ignore languages
+    if (this.isLanguage(tag)) {
+      return false;
+    }
+
+    return true;
+  }
   
+
 
   filterSessions() {
     let sessions = [];
@@ -137,11 +156,15 @@ class SessionsPage extends React.Component {
           </Card.Body>
           <Card.Footer>
               { session.tags.split(',').map(tag => {
-                  return (<Badge variant="primary" className="mr-1">{ tag }</Badge>);
+                  if (this.isValidTag(tag)) {
+                    return (<Badge variant="primary" className="mr-1">{ tag }</Badge>);
+                  }
                 })
               }
               { session.hiddenTags.split(',').map(tag => {
-                  return (<Badge variant="secondary" className="mr-1">{ tag }</Badge>);
+                  if (this.isValidTag(tag)) {
+                    return (<Badge variant="secondary" className="mr-1">{ tag }</Badge>);
+                  }
                 })
               }
             </Card.Footer>
