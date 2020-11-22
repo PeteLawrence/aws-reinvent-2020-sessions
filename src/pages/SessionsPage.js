@@ -18,13 +18,33 @@ class SessionsPage extends React.Component {
       language: 'english',
       startTime: 9,
       endTime: 17,
-      date: '2020-12-02'
+      date: '2020-12-02',
+      tags: this.getTags()
     };
   }
+
 
   getLanguages() {
     return [ 'english', 'Spanish' ];
   }
+
+  getTags() {
+    let allTags = [];
+    for (let session of data.sessions) {
+      let tags = session.tags.split(',');
+
+      for (let tag of tags) {
+        if (!allTags.includes(tag)) {
+          allTags.push(tag);
+        }
+      }
+    }
+
+    allTags.sort();
+
+    return allTags;
+  }
+  
 
   filterSessions() {
     let sessions = [];
@@ -56,6 +76,16 @@ class SessionsPage extends React.Component {
         }
       }
 
+      // Tags filter
+      let match = false;
+
+      for (let selectedTag of this.state.tags) {
+        if (tags.includes(selectedTag)) {
+          match = true;
+        }
+      }
+      if (!match) continue;
+
       sessions.push(session);
     }
 
@@ -64,7 +94,6 @@ class SessionsPage extends React.Component {
 
   listSessions() {
     let sessions = this.filterSessions();
-    console.log(sessions[0]);
 
     return sessions.map(session => {
       let sessionStart = dayjs.unix(session.schedulingData.start.timestamp);
@@ -119,6 +148,17 @@ class SessionsPage extends React.Component {
     });
   }
 
+  handleTagChange(event) {
+    let tags = [];
+    for (let option of event.target.selectedOptions) {
+      tags.push(option.value);
+    }
+    
+    this.setState({
+      tags: tags
+    });
+  }
+
 
   /**
    * Renders the Marker component
@@ -146,6 +186,13 @@ class SessionsPage extends React.Component {
             <Form.Label>Time</Form.Label>
             <Form.Control type="time" defaultValue="9" onChange={ this.handleStartTimeChange.bind(this)} />
             <Form.Control type="time" defaultValue="17" onChange={ this.handleEndTimeChange.bind(this)}/>
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label>Tags</Form.Label>
+            <Form.Control as="select" ref="tags" onChange={this.handleTagChange.bind(this)} multiple >
+              { this.getTags().map(tag => ( <option>{ tag }</option> ) ) }
+            </Form.Control>
           </Form.Group>
         </Form>
 
